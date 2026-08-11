@@ -564,6 +564,16 @@ a { color: inherit; text-decoration: none; }
 
 .legal-list li { margin-bottom: 0.4rem; }
 
+.legal-list strong { color: var(--ink-soft); font-weight: 600; }
+
+.legal-body a, .legal-list a {
+    color: var(--accent);
+    font-weight: 500;
+    border-bottom: 1px solid var(--border);
+}
+
+.legal-body a:hover, .legal-list a:hover { border-bottom-color: var(--accent); }
+
 .legal-close {
     margin-top: 2.5rem;
     padding-top: 1.5rem;
