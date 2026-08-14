@@ -8,3 +8,6 @@ __pycache__/
 .DS_Store
 .claude/plans/
 Screenshot *.png
+*.log
+.pytest_cache/
+.coverage
