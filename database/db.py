@@ -93,6 +93,15 @@ def get_user_by_email(email):
     return user
 
 
+def get_user_by_id(user_id):
+    conn = get_db()
+    user = conn.execute(
+        "SELECT * FROM users WHERE id = ?", (user_id,)
+    ).fetchone()
+    conn.close()
+    return user
+
+
 def create_user(name, email, password_hash):
     conn = get_db()
     cursor = conn.execute(
@@ -103,3 +112,13 @@ def create_user(name, email, password_hash):
     user_id = cursor.lastrowid
     conn.close()
     return user_id
+
+
+def get_expenses_by_user(user_id):
+    conn = get_db()
+    expenses = conn.execute(
+        "SELECT * FROM expenses WHERE user_id = ? ORDER BY date DESC, id DESC",
+        (user_id,),
+    ).fetchall()
+    conn.close()
+    return expenses

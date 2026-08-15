@@ -533,6 +533,145 @@ a { color: inherit; text-decoration: none; }
 .auth-switch a:hover { text-decoration: underline; }
 
 /* ------------------------------------------------------------------ */
+/* Profile                                                             */
+/* ------------------------------------------------------------------ */
+
+.profile-card { text-align: center; }
+
+.profile-avatar {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: var(--paper-card);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 0 auto 1.25rem;
+}
+
+.profile-name {
+    font-family: var(--font-body);
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--ink);
+}
+
+.profile-email {
+    font-size: 0.95rem;
+    color: var(--ink-muted);
+    margin-top: 0.25rem;
+}
+
+.profile-divider {
+    height: 1px;
+    background: var(--border);
+    margin: 1.5rem 0;
+}
+
+.profile-meta {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    color: var(--ink-muted);
+}
+
+.profile-meta-icon { width: 16px; height: 16px; color: var(--ink-faint); }
+
+.profile-signout {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-top: 1.75rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--danger);
+}
+
+.profile-signout-icon { width: 16px; height: 16px; }
+
+.profile-container { max-width: 640px; }
+
+.profile-expenses { margin-top: 1.5rem; text-align: left; }
+
+.profile-expenses-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
+
+.profile-expenses-title {
+    font-family: var(--font-body);
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--ink);
+}
+
+.profile-expenses-total {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--ink);
+    font-variant-numeric: tabular-nums;
+}
+
+.profile-expenses-empty {
+    font-size: 0.9rem;
+    color: var(--ink-muted);
+    text-align: center;
+    padding: 1rem 0;
+}
+
+.expense-list { display: flex; flex-direction: column; }
+
+.expense-row {
+    display: grid;
+    grid-template-columns: 110px 1fr auto;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--border-soft);
+    transition: background 0.15s;
+}
+
+.expense-row:last-child { border-bottom: none; }
+.expense-row:hover { background: var(--paper-warm); }
+
+.expense-category {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--accent);
+    background: var(--accent-light);
+    border-radius: 999px;
+    padding: 0.3rem 0.7rem;
+    text-align: center;
+}
+
+.expense-details { display: flex; flex-direction: column; gap: 0.15rem; min-width: 0; }
+
+.expense-description {
+    font-size: 0.9rem;
+    color: var(--ink);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.expense-date { font-size: 0.8rem; color: var(--ink-faint); }
+
+.expense-amount {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--ink);
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+}
+
+/* ------------------------------------------------------------------ */
 /* Footer                                                              */
 /* ------------------------------------------------------------------ */
 
