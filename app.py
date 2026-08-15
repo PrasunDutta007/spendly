@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, session
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from database.db import get_db, init_db, seed_db, create_user, get_user_by_email
+from database import queries
 
 app = Flask(__name__)
 app.secret_key = "dev-secret-key-change-in-production"
@@ -87,38 +88,29 @@ def profile():
     if not session.get("user_id"):
         return redirect(url_for("login"))
 
-    user = {
-        "name": "Priya Sharma",
-        "email": "priya.sharma@example.com",
-        "member_since": "March 2025",
-    }
+    user_id = session["user_id"]
 
-    stats = {
-        "total_spent": 18450.00,
-        "transaction_count": 34,
-        "top_category": "Food",
-    }
+    user = queries.get_user_by_id(user_id)
+    stats = queries.get_summary_stats(user_id)
+    transactions = queries.get_recent_transactions(user_id)
+    raw_categories = queries.get_category_breakdown(user_id)
 
-    transactions = [
-        {"date": "2026-08-10", "description": "Zomato order", "category": "Food", "amount": 420.00},
-        {"date": "2026-08-08", "description": "Ola cab", "category": "Transport", "amount": 180.00},
-        {"date": "2026-08-05", "description": "Electricity bill", "category": "Bills", "amount": 2100.00},
-        {"date": "2026-08-03", "description": "Movie tickets - PVR", "category": "Entertainment", "amount": 600.00},
-        {"date": "2026-08-01", "description": "Pharmacy - Apollo", "category": "Health", "amount": 350.00},
-    ]
-
-    # bar_height is the category's percent scaled so the largest category
-    # reaches 100, rounded to the nearest 5 to match a fixed set of CSS
-    # height-bucket classes (.bar-5 ... .bar-100) — keeps the vertical bar
-    # chart inline-style-free per the spec's "no inline styles" rule.
-    categories = [
-        {"name": "Food", "total": 6200.00, "percent": 34, "bar_height": 100},
-        {"name": "Bills", "total": 4600.00, "percent": 25, "bar_height": 75},
-        {"name": "Transport", "total": 2600.00, "percent": 14, "bar_height": 45},
-        {"name": "Shopping", "total": 2350.00, "percent": 13, "bar_height": 40},
-        {"name": "Entertainment", "total": 1450.00, "percent": 8, "bar_height": 25},
-        {"name": "Health", "total": 1250.00, "percent": 6, "bar_height": 20},
-    ]
+    # profile.html expects `total`/`percent`/`bar_height`/`name`; queries.py
+    # returns `name`/`amount`/`pct`. Map names and compute bar_height here
+    # (nearest-5 CSS bucket, largest category = 100) — this is presentation
+    # logic, not data access, so it stays out of queries.py.
+    categories = []
+    if raw_categories:
+        max_pct = raw_categories[0]["pct"]
+        for c in raw_categories:
+            scaled = (c["pct"] / max_pct) * 100 if max_pct else 0
+            bucket = min(max(5, round(scaled / 5) * 5), 100)
+            categories.append({
+                "name": c["name"],
+                "total": c["amount"],
+                "percent": c["pct"],
+                "bar_height": bucket,
+            })
 
     return render_template(
         "profile.html",
