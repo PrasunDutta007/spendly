@@ -615,6 +615,30 @@ a { color: inherit; text-decoration: none; }
 
 .profile-signout-icon { width: 15px; height: 15px; }
 
+.profile-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-shrink: 0;
+}
+
+.profile-add-expense {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.55rem 1.1rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--ink-soft);
+    transition: border-color 0.2s, color 0.2s;
+}
+
+.profile-add-expense:hover { border-color: var(--accent); color: var(--accent); }
+
+.profile-add-expense-icon { width: 15px; height: 15px; }
+
 .profile-stats {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
