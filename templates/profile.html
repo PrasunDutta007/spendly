@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block title %}Profile · Spendly{% endblock %}
+
+{% block content %}
+<section class="profile-page">
+    <div class="profile-page-inner">
+
+        <div class="profile-header-card">
+            <div class="profile-header-main">
+                <div class="profile-avatar">{{ user.name[0] | upper }}</div>
+                <div class="profile-header-text">
+                    <h1 class="profile-header-name">{{ user.name }}</h1>
+                    <p class="profile-header-email">{{ user.email }}</p>
+                    <div class="profile-header-meta">
+                        <i data-lucide="calendar" class="profile-meta-icon"></i>
+                        <span>Member since {{ user.member_since }}</span>
+                    </div>
+                </div>
+            </div>
+            <a href="{{ url_for('logout') }}" class="profile-signout">
+                <i data-lucide="log-out" class="profile-signout-icon"></i>
+                Sign out
+            </a>
+        </div>
+
+        <div class="profile-stats">
+            <div class="profile-stat">
+                <div class="profile-stat-icon"><i data-lucide="wallet"></i></div>
+                <div class="profile-stat-body">
+                    <span class="profile-stat-label">Total spent</span>
+                    <span class="profile-stat-value">₹{{ "%.2f"|format(stats.total_spent) }}</span>
+                </div>
+            </div>
+            <div class="profile-stat">
+                <div class="profile-stat-icon"><i data-lucide="receipt"></i></div>
+                <div class="profile-stat-body">
+                    <span class="profile-stat-label">Transactions</span>
+                    <span class="profile-stat-value">{{ stats.transaction_count }}</span>
+                </div>
+            </div>
+            <div class="profile-stat">
+                <div class="profile-stat-icon"><i data-lucide="tag"></i></div>
+                <div class="profile-stat-body">
+                    <span class="profile-stat-label">Top category</span>
+                    <span class="profile-stat-value">{{ stats.top_category }}</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="profile-section">
+            <h2 class="profile-section-title">Recent transactions</h2>
+            <div class="tx-table-wrap">
+                <table class="tx-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Description</th>
+                            <th>Category</th>
+                            <th class="tx-amount-col">Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for t in transactions %}
+                        <tr>
+                            <td>{{ t.date }}</td>
+                            <td>{{ t.description }}</td>
+                            <td><span class="tx-badge">{{ t.category }}</span></td>
+                            <td class="tx-amount-col">₹{{ "%.2f"|format(t.amount) }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="profile-section">
+            <h2 class="profile-section-title">Category breakdown</h2>
+            <div class="breakdown-chart">
+                {% for c in categories %}
+                <div class="breakdown-bar-col">
+                    <span class="breakdown-bar-value">₹{{ "%.0f"|format(c.total) }}</span>
+                    <div class="breakdown-bar-track">
+                        <div class="breakdown-bar-fill bar-{{ c.bar_height }}"></div>
+                    </div>
+                    <span class="breakdown-bar-name">{{ c.name }}</span>
+                    <span class="breakdown-bar-percent">{{ c.percent }}%</span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+    </div>
+</section>
+{% endblock %}

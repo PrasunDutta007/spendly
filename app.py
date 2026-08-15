@@ -61,6 +61,7 @@ def login():
         return render_template("login.html", error="Invalid email or password.")
 
     session["user_id"] = user["id"]
+    session["user_name"] = user["name"]
 
     return redirect(url_for("landing"))
 
@@ -81,14 +82,56 @@ def privacy():
     return render_template("privacy.html")
 
 
+@app.route("/profile")
+def profile():
+    if not session.get("user_id"):
+        return redirect(url_for("login"))
+
+    user = {
+        "name": "Priya Sharma",
+        "email": "priya.sharma@example.com",
+        "member_since": "March 2025",
+    }
+
+    stats = {
+        "total_spent": 18450.00,
+        "transaction_count": 34,
+        "top_category": "Food",
+    }
+
+    transactions = [
+        {"date": "2026-08-10", "description": "Zomato order", "category": "Food", "amount": 420.00},
+        {"date": "2026-08-08", "description": "Ola cab", "category": "Transport", "amount": 180.00},
+        {"date": "2026-08-05", "description": "Electricity bill", "category": "Bills", "amount": 2100.00},
+        {"date": "2026-08-03", "description": "Movie tickets - PVR", "category": "Entertainment", "amount": 600.00},
+        {"date": "2026-08-01", "description": "Pharmacy - Apollo", "category": "Health", "amount": 350.00},
+    ]
+
+    # bar_height is the category's percent scaled so the largest category
+    # reaches 100, rounded to the nearest 5 to match a fixed set of CSS
+    # height-bucket classes (.bar-5 ... .bar-100) — keeps the vertical bar
+    # chart inline-style-free per the spec's "no inline styles" rule.
+    categories = [
+        {"name": "Food", "total": 6200.00, "percent": 34, "bar_height": 100},
+        {"name": "Bills", "total": 4600.00, "percent": 25, "bar_height": 75},
+        {"name": "Transport", "total": 2600.00, "percent": 14, "bar_height": 45},
+        {"name": "Shopping", "total": 2350.00, "percent": 13, "bar_height": 40},
+        {"name": "Entertainment", "total": 1450.00, "percent": 8, "bar_height": 25},
+        {"name": "Health", "total": 1250.00, "percent": 6, "bar_height": 20},
+    ]
+
+    return render_template(
+        "profile.html",
+        user=user,
+        stats=stats,
+        transactions=transactions,
+        categories=categories,
+    )
+
+
 # ------------------------------------------------------------------ #
 # Placeholder routes — students will implement these                  #
 # ------------------------------------------------------------------ #
-
-@app.route("/profile")
-def profile():
-    return "Profile page — coming in Step 4"
-
 
 @app.route("/expenses/add")
 def add_expense():
