@@ -33,12 +33,35 @@ def get_user_by_id(user_id):
     }
 
 
-def get_summary_stats(user_id):
+def parse_date_range(start_date, end_date):
+    """Validate a start/end date pair (both-or-nothing, YYYY-MM-DD,
+    non-reversed). Returns (start_date, end_date) if valid, else (None, None)."""
+    if not start_date or not end_date:
+        return None, None
+    try:
+        parsed_start = datetime.strptime(start_date, "%Y-%m-%d")
+        parsed_end = datetime.strptime(end_date, "%Y-%m-%d")
+    except ValueError:
+        return None, None
+    if parsed_start > parsed_end:
+        return None, None
+    return start_date, end_date
+
+
+def _date_filtered(sql, params, start_date, end_date):
+    """Append an inclusive date range clause when both bounds are present."""
+    if start_date and end_date:
+        sql += " AND date >= ? AND date <= ?"
+        params += [start_date, end_date]
+    return sql, params
+
+
+def get_summary_stats(user_id, start_date=None, end_date=None):
     conn = get_db()
-    rows = conn.execute(
-        "SELECT category, amount FROM expenses WHERE user_id = ?",
-        (user_id,)
-    ).fetchall()
+    sql = "SELECT category, amount FROM expenses WHERE user_id = ?"
+    params = [user_id]
+    sql, params = _date_filtered(sql, params, start_date, end_date)
+    rows = conn.execute(sql, params).fetchall()
     conn.close()
 
     if not rows:
@@ -63,13 +86,14 @@ def get_summary_stats(user_id):
     }
 
 
-def get_recent_transactions(user_id, limit=10):
+def get_recent_transactions(user_id, limit=10, start_date=None, end_date=None):
     conn = get_db()
-    rows = conn.execute(
-        "SELECT date, description, category, amount FROM expenses "
-        "WHERE user_id = ? ORDER BY date DESC, id DESC LIMIT ?",
-        (user_id, limit)
-    ).fetchall()
+    sql = "SELECT date, description, category, amount FROM expenses WHERE user_id = ?"
+    params = [user_id]
+    sql, params = _date_filtered(sql, params, start_date, end_date)
+    sql += " ORDER BY date DESC, id DESC LIMIT ?"
+    params.append(limit)
+    rows = conn.execute(sql, params).fetchall()
     conn.close()
 
     return [
@@ -83,12 +107,12 @@ def get_recent_transactions(user_id, limit=10):
     ]
 
 
-def get_category_breakdown(user_id):
+def get_category_breakdown(user_id, start_date=None, end_date=None):
     conn = get_db()
-    rows = conn.execute(
-        "SELECT category, amount FROM expenses WHERE user_id = ?",
-        (user_id,)
-    ).fetchall()
+    sql = "SELECT category, amount FROM expenses WHERE user_id = ?"
+    params = [user_id]
+    sql, params = _date_filtered(sql, params, start_date, end_date)
+    rows = conn.execute(sql, params).fetchall()
     conn.close()
 
     if not rows:

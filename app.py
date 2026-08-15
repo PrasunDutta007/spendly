@@ -90,10 +90,18 @@ def profile():
 
     user_id = session["user_id"]
 
+    start_date, end_date = queries.parse_date_range(
+        request.args.get("start_date", ""), request.args.get("end_date", "")
+    )
+    start_date = start_date or ""
+    end_date = end_date or ""
+
     user = queries.get_user_by_id(user_id)
-    stats = queries.get_summary_stats(user_id)
-    transactions = queries.get_recent_transactions(user_id)
-    raw_categories = queries.get_category_breakdown(user_id)
+    stats = queries.get_summary_stats(user_id, start_date, end_date)
+    transactions = queries.get_recent_transactions(
+        user_id, start_date=start_date, end_date=end_date
+    )
+    raw_categories = queries.get_category_breakdown(user_id, start_date, end_date)
 
     # profile.html expects `total`/`percent`/`bar_height`/`name`; queries.py
     # returns `name`/`amount`/`pct`. Map names and compute bar_height here
@@ -118,6 +126,8 @@ def profile():
         stats=stats,
         transactions=transactions,
         categories=categories,
+        start_date=start_date,
+        end_date=end_date,
     )
 
 
