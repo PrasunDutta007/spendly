@@ -18,10 +18,16 @@
                     </div>
                 </div>
             </div>
-            <a href="{{ url_for('logout') }}" class="profile-signout">
-                <i data-lucide="log-out" class="profile-signout-icon"></i>
-                Sign out
-            </a>
+            <div class="profile-header-actions">
+                <a href="{{ url_for('add_expense') }}" class="profile-add-expense">
+                    <i data-lucide="plus" class="profile-add-expense-icon"></i>
+                    Add expense
+                </a>
+                <a href="{{ url_for('logout') }}" class="profile-signout">
+                    <i data-lucide="log-out" class="profile-signout-icon"></i>
+                    Sign out
+                </a>
+            </div>
         </div>
 
         <div class="profile-stats">

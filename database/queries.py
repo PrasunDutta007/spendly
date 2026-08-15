@@ -136,3 +136,47 @@ def get_category_breakdown(user_id, start_date=None, end_date=None):
     breakdown[0]["pct"] += remainder
 
     return breakdown
+
+
+VALID_CATEGORIES = ["Food", "Transport", "Bills", "Health", "Entertainment", "Shopping", "Other"]
+
+
+def validate_expense_input(amount, category, date, description):
+    """Validate raw form input for a new expense.
+    Returns (cleaned_dict, error) — cleaned_dict is None if error is set."""
+    if not amount:
+        return None, "Amount is required."
+    try:
+        amount_value = float(amount)
+    except ValueError:
+        return None, "Amount must be a number."
+    if amount_value <= 0:
+        return None, "Amount must be greater than zero."
+
+    if category not in VALID_CATEGORIES:
+        return None, "Please select a valid category."
+
+    if not date:
+        return None, "Date is required."
+    try:
+        datetime.strptime(date, "%Y-%m-%d")
+    except ValueError:
+        return None, "Please enter a valid date."
+
+    return {
+        "amount": round(amount_value, 2),
+        "category": category,
+        "date": date,
+        "description": (description or "").strip() or None,
+    }, None
+
+
+def create_expense(user_id, amount, category, date, description):
+    conn = get_db()
+    conn.execute(
+        "INSERT INTO expenses (user_id, amount, category, date, description) "
+        "VALUES (?, ?, ?, ?, ?)",
+        (user_id, amount, category, date, description),
+    )
+    conn.commit()
+    conn.close()

@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from flask import Flask, render_template, request, redirect, url_for, session
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -131,14 +133,47 @@ def profile():
     )
 
 
+@app.route("/expenses/add", methods=["GET", "POST"])
+def add_expense():
+    if not session.get("user_id"):
+        return redirect(url_for("login"))
+
+    today = datetime.now().strftime("%Y-%m-%d")
+
+    if request.method == "GET":
+        return render_template(
+            "add_expense.html", categories=queries.VALID_CATEGORIES, today=today
+        )
+
+    amount = request.form.get("amount", "").strip()
+    category = request.form.get("category", "").strip()
+    date = request.form.get("date", "").strip()
+    description = request.form.get("description", "").strip()
+
+    cleaned, error = queries.validate_expense_input(amount, category, date, description)
+
+    if error:
+        return render_template(
+            "add_expense.html",
+            categories=queries.VALID_CATEGORIES,
+            today=today,
+            error=error,
+            amount=amount,
+            category=category,
+            date=date,
+            description=description,
+        )
+
+    queries.create_expense(
+        session["user_id"], cleaned["amount"], cleaned["category"],
+        cleaned["date"], cleaned["description"],
+    )
+    return redirect(url_for("profile"))
+
+
 # ------------------------------------------------------------------ #
 # Placeholder routes — students will implement these                  #
 # ------------------------------------------------------------------ #
-
-@app.route("/expenses/add")
-def add_expense():
-    return "Add expense — coming in Step 7"
-
 
 @app.route("/expenses/<int:id>/edit")
 def edit_expense(id):
